@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package banco;
+package Utils;
 
 /**
  *
  * @author manuela
  */
-public class Main {
-    public static void main(String[] args) {
-        
-    }
+public enum EstadoTransaccion {
+    TRABAJANDO, VALIDANDO, ACTUALIZANDO
 }

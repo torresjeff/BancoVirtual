@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cliente;
+package banco;
 
 /**
  *
  * @author manuela
  */
-public class Main {
+public class MainBanco {
     public static void main(String[] args) {
-        System.out.println("Holgaoas df0ihasd");
+        
     }
 }

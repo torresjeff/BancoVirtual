@@ -12,12 +12,11 @@ import java.util.List;
  * @author manuela
  */
 public class Usuario {
-    private String usuario;
-    private String password;
+    private int usuario;
     
     private List<TarjetaVisa> tarjetasVisa;
     private List<TarjetaMasterCard> tarjetasMastercard;
-    private List<CuentaAhorro> cuentasAhorro;
-    private List<CuentaCorriente> cuentasCorriente;
+    private List<CuentaAhorro> cuentasAhorros;
+    private List<CuentaCorriente> cuentasCorrientes;
     
 }
