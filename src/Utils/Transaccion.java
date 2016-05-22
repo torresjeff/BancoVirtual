@@ -14,4 +14,6 @@ public class Transaccion {
     private TipoTransaccion tipoTransaccion;
     private EstadoTransaccion estado;
     
+    
+    
 }

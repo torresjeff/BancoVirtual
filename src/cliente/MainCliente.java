@@ -37,12 +37,15 @@ public class MainCliente {
             IGestorConcurrencia gestor =
                     (IGestorConcurrencia)Naming.lookup("//"+IP_GESTOR+":"+PUERTO_GESTOR+"/GestorConcurrencia");
             
-            System.out.println("Ingrese su usuario: ");
+            // INICIAR SESION
+            /*System.out.println("Ingrese su usuario: ");
             int usuario = Integer.parseInt(in.readLine());
             System.out.println("Ingrese su contraseña: ");
             String pass = in.readLine();
+            gestor.iniciarSesion(usuario, pass);*/
             
-            gestor.iniciarSesion(usuario, pass);
+            // CONSULTAR
+            
         } catch (RemoteException ex) {
             Logger.getLogger(MainCliente.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

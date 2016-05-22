@@ -7,6 +7,7 @@ package gestorconcurrencia;
 
 import Utils.Banco;
 import Utils.TipoProducto;
+import Utils.Transaccion;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -52,6 +53,11 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
 
     @Override
     public boolean despositar(int idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean commit(Transaccion t) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

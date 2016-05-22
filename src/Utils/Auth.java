@@ -11,6 +11,6 @@ package Utils;
  */
 
 public class Auth {
-    int id;
+    String id;
     String pasword;
 }

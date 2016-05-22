@@ -6,6 +6,7 @@
 package gestorconcurrencia;
 
 import Utils.TipoProducto;
+import Utils.Transaccion;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -18,4 +19,5 @@ public interface IGestorConcurrencia extends Remote {
     public double consultar(int idUsuario, TipoProducto tipo, int numeroProducto) throws RemoteException;
     public boolean retirar(int idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
     public boolean despositar(int idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
+    public boolean commit(Transaccion t) throws RemoteException;
 }
