@@ -14,16 +14,13 @@ import Utils.TarjetaVisa;
 import Utils.TipoProducto;
 import Utils.Transaccion;
 import Utils.Usuario;
-import gestorconcurrencia.IGestorConcurrencia;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.concurrent.locks.LockSupport;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +39,8 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     private ArrayList<TarjetaMasterCard> mastercards;
     private ArrayList<CuentaAhorro> ahorros;
     private ArrayList<CuentaCorriente> corrientes;
+    
+    private HashMap<Transaccion, > transaccionesPendientes;
     
     public static void main(String[] args) {
         try {
@@ -68,6 +67,8 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
         mastercards = new ArrayList<>();
         ahorros = new ArrayList<>();
         corrientes = new ArrayList<>();
+        transaccionesPendientes = new ArrayList<>();
+        
         agregarUsuarios();
         agregarProductos();
         System.out.println("Banco creado");
@@ -236,10 +237,15 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
             case TARJETA_MASTERCARD:
                 for (TarjetaMasterCard producto : mastercards) {
                     if (producto.getUsuario().equals(usuario) && cantidad > 0) {
-                        t.setEstado(EstadoTransaccion.VALIDANDO);
-                        producto.depositar(cantidad);
-                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
-                        return true;
+                        try {
+                            producto.clone();
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            producto.depositar(cantidad);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            return true;
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
                 break;

@@ -73,9 +73,9 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
         }
     }
     
-    private Transaccion crearTransaccion(TipoTransaccion tipoTransaccion) {
+    private Transaccion crearTransaccion(String usuario, TipoTransaccion tipoTransaccion, TipoProducto tipoProducto) {
         transaccionesTotales++;
-        Transaccion t = new Transaccion(transaccionesTotales, tipoTransaccion);
+        Transaccion t = new Transaccion(usuario, transaccionesTotales, tipoTransaccion, tipoProducto);
         transaccionesActivas.put(transaccionesTotales, t);
         return t;
     }
@@ -108,7 +108,7 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
             return -1;
         }*/
         
-        Transaccion t = crearTransaccion(TipoTransaccion.LECTURA);
+        Transaccion t = crearTransaccion(idUsuario, TipoTransaccion.LECTURA, TipoProducto.CUENTA_USUARIO);
         t.setUsuario(idUsuario);
         return t.getId();
     }
@@ -125,7 +125,7 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
 
     @Override
     public double consultar(String idUsuario, TipoProducto tipo, int numeroProducto) throws RemoteException {
-        Transaccion t = crearTransaccion(TipoTransaccion.LECTURA);
+        Transaccion t = crearTransaccion(idUsuario, TipoTransaccion.LECTURA, tipo);
         t.setUsuario(idUsuario);
         
         switch (tipo)
@@ -146,7 +146,7 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
     @Override
     public synchronized double retirar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException {
         
-        Transaccion t = crearTransaccion(TipoTransaccion.ESCRITURA);
+        Transaccion t = crearTransaccion(idUsuario, TipoTransaccion.ESCRITURA, tipo);
         t.setUsuario(idUsuario);
         
         switch (tipo)
@@ -180,7 +180,7 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
 
     @Override
     public double depositar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException {
-        Transaccion t = crearTransaccion(TipoTransaccion.ESCRITURA);
+        Transaccion t = crearTransaccion(idUsuario, TipoTransaccion.ESCRITURA, tipo);
         t.setUsuario(idUsuario);
         
         switch (tipo)

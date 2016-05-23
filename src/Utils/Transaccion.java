@@ -16,6 +16,7 @@ public class Transaccion implements Serializable {
     private long hora;
     private EstadoTransaccion estado;
     private TipoTransaccion tipoTransaccion;
+    private TipoProducto recursoAfectado;
     private String usuario;
 
     public Transaccion(long id) {
@@ -24,9 +25,11 @@ public class Transaccion implements Serializable {
         this.hora = System.currentTimeMillis();
     }
 
-    public Transaccion(long id, TipoTransaccion tipoTransaccion) {
+    public Transaccion(String usuario, long id, TipoTransaccion tipoTransaccion, TipoProducto tipoProducto) {
+        this.usuario = usuario;
         this.id = id;
         this.tipoTransaccion = tipoTransaccion;
+        this.recursoAfectado = tipoProducto;
         this.estado = EstadoTransaccion.TRABAJANDO;
         this.hora = System.currentTimeMillis();
     }

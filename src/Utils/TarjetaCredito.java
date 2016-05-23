@@ -63,6 +63,14 @@ public class TarjetaCredito {
     public double getSaldo() {
         return saldo;
     }
+
+    @Override
+    public TarjetaCredito clone() throws CloneNotSupportedException {
+        super.clone();
+        return new TarjetaCredito(numeroTarjeta, saldo, usuario); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
     
     
 

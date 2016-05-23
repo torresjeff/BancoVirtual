@@ -7,24 +7,25 @@ package Utils;
 
 /**
  *
- * @author manuela
+ * @author torre
  */
-public class Cuenta {
-    protected int numeroCuenta;
+public class Producto {
+    protected int numeroProducto;
     protected double saldo;
     protected String usuario;
 
-    public Cuenta(int numeroCuenta, double saldo, String usuario) {
-        this.numeroCuenta = numeroCuenta;
+    public Producto(int numeroProducto, double saldo, String usuario) {
+        this.numeroProducto = numeroProducto;
         this.saldo = saldo;
         this.usuario = usuario;
     }
 
-    public Cuenta(int numeroCuenta, String usuario) {
-        this.numeroCuenta = numeroCuenta;
+    public Producto(int numeroTarjeta, String usuario) {
+        this.numeroProducto = numeroTarjeta;
         this.usuario = usuario;
         this.saldo = 0;
     }
+    
     
     
     public double consultar() {
@@ -43,12 +44,12 @@ public class Cuenta {
         }
     }
 
-    public int getNumeroCuenta() {
-        return numeroCuenta;
+    public int getNumeroTarjeta() {
+        return numeroProducto;
     }
 
-    public void setNumeroCuenta(int numeroCuenta) {
-        this.numeroCuenta = numeroCuenta;
+    public void setNumeroTarjeta(int numeroTarjeta) {
+        this.numeroProducto = numeroTarjeta;
     }
 
     public String getUsuario() {
@@ -62,20 +63,4 @@ public class Cuenta {
     public double getSaldo() {
         return saldo;
     }
-    
-    
-
-    @Override
-    public String toString() {
-        return "Cuenta{" + "numeroCuenta=" + numeroCuenta + ", saldo=" + saldo + ", usuario=" + usuario + '}';
-    }
-
-    @Override
-    public Cuenta clone() throws CloneNotSupportedException {
-        super.clone();
-        return new Cuenta(numeroCuenta, saldo, usuario); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
-    
 }

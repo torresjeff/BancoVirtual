@@ -50,7 +50,7 @@ public class MainCliente {
             double consulta = gestor.consultar(usuario, TipoProducto.TARJETA_VISA, 1);
             System.out.println("consulta: " + consulta);
             // RETIRAR
-            double retiro = gestor.retirar(usuario, TipoProducto.TARJETA_VISA, 1, 20000);
+            double retiro = gestor.retirar(usuario, TipoProducto.TARJETA_VISA, 1, 5000);
             System.out.println("retiro: " + retiro);
             // DEPOSITAR
             double deposito = gestor.depositar(usuario, TipoProducto.TARJETA_VISA, 1, 55000);
