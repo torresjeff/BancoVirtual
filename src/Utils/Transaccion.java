@@ -61,5 +61,16 @@ public class Transaccion implements Serializable {
     public long getHora() {
         return hora;
     }
+
+    public TipoProducto getRecursoAfectado() {
+        return recursoAfectado;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaccion{" + "id=" + id + ", hora=" + hora + ", estado=" + estado + ", tipoTransaccion=" + tipoTransaccion.toString() + ", recursoAfectado=" + recursoAfectado.toString() + ", usuario=" + usuario + '}';
+    }
+    
+    
     
 }

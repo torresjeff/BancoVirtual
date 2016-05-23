@@ -20,5 +20,12 @@ public class TarjetaVisa extends TarjetaCredito implements Serializable {
     public TarjetaVisa(int numeroTarjeta, String usuario) {
         super(numeroTarjeta, usuario);
     }
+
+    @Override
+    public TarjetaVisa clone() throws CloneNotSupportedException {
+        return new TarjetaVisa(numeroProducto, saldo, usuario); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
     
 }

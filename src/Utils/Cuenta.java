@@ -9,71 +9,20 @@ package Utils;
  *
  * @author manuela
  */
-public class Cuenta {
-    protected int numeroCuenta;
-    protected double saldo;
-    protected String usuario;
+public class Cuenta extends Producto {
 
     public Cuenta(int numeroCuenta, double saldo, String usuario) {
-        this.numeroCuenta = numeroCuenta;
-        this.saldo = saldo;
-        this.usuario = usuario;
+        super(numeroCuenta, saldo, usuario);
     }
 
     public Cuenta(int numeroCuenta, String usuario) {
-        this.numeroCuenta = numeroCuenta;
-        this.usuario = usuario;
-        this.saldo = 0;
-    }
-    
-    
-    public double consultar() {
-        return saldo;
-    }
-    
-    public void depositar(double cantidad) {
-        if (cantidad > 0) {
-            saldo += cantidad;
-        }
-    }
-    
-    public void retirar(double cantidad) {
-        if (saldo >= cantidad) {
-            saldo -= cantidad;
-        }
-    }
-
-    public int getNumeroCuenta() {
-        return numeroCuenta;
-    }
-
-    public void setNumeroCuenta(int numeroCuenta) {
-        this.numeroCuenta = numeroCuenta;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
-    public double getSaldo() {
-        return saldo;
-    }
-    
-    
-
-    @Override
-    public String toString() {
-        return "Cuenta{" + "numeroCuenta=" + numeroCuenta + ", saldo=" + saldo + ", usuario=" + usuario + '}';
+        super(numeroCuenta, usuario);
     }
 
     @Override
     public Cuenta clone() throws CloneNotSupportedException {
         super.clone();
-        return new Cuenta(numeroCuenta, saldo, usuario); //To change body of generated methods, choose Tools | Templates.
+        return new Cuenta(numeroProducto, saldo, usuario); //To change body of generated methods, choose Tools | Templates.
     }
     
     

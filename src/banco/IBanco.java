@@ -20,6 +20,6 @@ public interface IBanco extends Remote {
     public boolean retirar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t, int numeroProducto) throws RemoteException;
     public boolean depositar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t, int numeroProducto) throws RemoteException;
     public boolean puedeCommit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException;
-    public boolean commit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException;
+    public boolean commit(Transaccion t) throws RemoteException;
     public boolean rollback(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException;
 }

@@ -20,5 +20,12 @@ public class TarjetaMasterCard extends TarjetaCredito implements Serializable {
     public TarjetaMasterCard(int numeroTarjeta, String usuario) {
         super(numeroTarjeta, usuario);
     }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new TarjetaMasterCard(numeroProducto, saldo, usuario); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
     
 }

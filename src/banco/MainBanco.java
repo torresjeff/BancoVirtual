@@ -9,9 +9,11 @@ import Utils.Auth;
 import Utils.CuentaAhorro;
 import Utils.CuentaCorriente;
 import Utils.EstadoTransaccion;
+import Utils.Producto;
 import Utils.TarjetaMasterCard;
 import Utils.TarjetaVisa;
 import Utils.TipoProducto;
+import Utils.TipoTransaccion;
 import Utils.Transaccion;
 import Utils.Usuario;
 import java.net.MalformedURLException;
@@ -20,7 +22,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +44,21 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     private ArrayList<CuentaAhorro> ahorros;
     private ArrayList<CuentaCorriente> corrientes;
     
-    private HashMap<Transaccion, > transaccionesPendientes;
+    private ConcurrentHashMap<Transaccion, Trans> transaccionesActivas;
+    private ConcurrentHashMap<Transaccion, Producto> transaccionesValidando;
+    private ConcurrentHashMap<Transaccion, Producto> transaccionesConsumadas;
+
+    
+    
+    private class Trans {
+        public TipoProducto recursoAfectado;
+        public TipoTransaccion tipoTransaccion;
+
+        public Trans(TipoProducto recursoAfectado, TipoTransaccion tipoTransaccion) {
+            this.recursoAfectado = recursoAfectado;
+            this.tipoTransaccion = tipoTransaccion;
+        }
+    }
     
     public static void main(String[] args) {
         try {
@@ -67,7 +85,10 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
         mastercards = new ArrayList<>();
         ahorros = new ArrayList<>();
         corrientes = new ArrayList<>();
-        transaccionesPendientes = new ArrayList<>();
+        
+        transaccionesActivas = new ConcurrentHashMap<>();
+        transaccionesValidando = new ConcurrentHashMap<>();
+        transaccionesConsumadas = new ConcurrentHashMap<>();
         
         agregarUsuarios();
         agregarProductos();
@@ -82,14 +103,8 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     }
     
     private void agregarProductos() {
-        System.out.println("agregarProductos()");
         int numeroProducto = 1;
-        if (auths == null) {
-            System.out.println("\tAuths es null");
-        }
-        if (usuarios == null) {
-            System.out.println("\tUsuarios es null");
-        }
+        
         for (Auth auth : auths) {
             Usuario u = new Usuario(auth.getId());
             TarjetaVisa tv = new TarjetaVisa(numeroProducto, numeroProducto * 10000, u.getUsuario());
@@ -114,13 +129,6 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
 
     @Override
     public boolean iniciarSesion(String usuario, String password) throws RemoteException {
-        System.out.println("Iniciando sesion: idUsuario: " + usuario + ", pass: " + password);
-        if (auths == null) {
-            System.out.println("Auths es null");
-        }
-        if (usuarios == null) {
-            System.out.println("Usuarios es null");
-        }
         for (Auth auth : auths) {
             if (auth.getId().equals(usuario) && auth.getPasword().equals(password)) {
                 System.out.println("Login aceptado");
@@ -141,6 +149,7 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                 for (TarjetaVisa visa : visas) {
                     if (visa.getUsuario().equals(usuario)) {
                         t.setEstado(EstadoTransaccion.VALIDANDO);
+                        System.out.println("\tSaldo: " + visa.consultar());
                         return visa.consultar();
                     }
                 }
@@ -148,6 +157,7 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                 for (TarjetaMasterCard mastercard : mastercards) {
                     if (mastercard.getUsuario().equals(usuario)) {
                         t.setEstado(EstadoTransaccion.VALIDANDO);
+                        System.out.println("\tSaldo: " + mastercard.consultar());
                         return mastercard.consultar();
                     }
                 }
@@ -155,6 +165,7 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                 for (CuentaAhorro ahorro : ahorros) {
                     if (ahorro.getUsuario().equals(usuario)) {
                         t.setEstado(EstadoTransaccion.VALIDANDO);
+                        System.out.println("\tSaldo: " + ahorro.consultar());
                         return ahorro.consultar();
                     }
                 }
@@ -162,6 +173,7 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                 for (CuentaCorriente corriente : corrientes) {
                     if (corriente.getUsuario().equals(usuario)) {
                         t.setEstado(EstadoTransaccion.VALIDANDO);
+                        System.out.println("\tSaldo: " + corriente.consultar());
                         return corriente.consultar();
                     }
                 }
@@ -222,15 +234,34 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     @Override
     public boolean depositar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t, int numeroProducto) throws RemoteException {
         System.out.println("El usuario \"" + usuario + "\" desea depositar " + cantidad + " pesos de su " + tipoProducto.toString());
-        
+        Trans trans = new Trans(tipoProducto, t.getTipoTransaccion());
+        transaccionesActivas.put(t, trans);
         switch (tipoProducto) {
             case TARJETA_VISA:
                 for (TarjetaVisa producto : visas) {
                     if (producto.getUsuario().equals(usuario) && cantidad > 0) {
-                        t.setEstado(EstadoTransaccion.VALIDANDO);
-                        producto.depositar(cantidad);
-                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
-                        return true;
+                        try {
+                            Producto p = (Producto)producto.clone();
+                            p.depositar(cantidad);
+                            
+                            System.out.println("\tp = " + p);
+                            System.out.println("\tvisas = " + visas);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            
+                            transaccionesActivas.remove(t);
+                            if (transaccionesActivas.contains(t)) {
+                                System.out.println("\tNo se pudo remover la transaccion " + t);
+                            }
+                            else {
+                                System.out.println("\tPasando la transaccion a estado de Validacion");
+                            }
+                            
+                            transaccionesValidando.put(t, p);
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            return validar(t);
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
                 break;
@@ -238,10 +269,13 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                 for (TarjetaMasterCard producto : mastercards) {
                     if (producto.getUsuario().equals(usuario) && cantidad > 0) {
                         try {
-                            producto.clone();
-                            t.setEstado(EstadoTransaccion.VALIDANDO);
-                            producto.depositar(cantidad);
+                            Producto p = (Producto)producto.clone();
+                            p.depositar(cantidad);
+                            transaccionesValidando.put(t, p);
+                            System.out.println("\tp = " + p);
+                            System.out.println("\tmastercards = " + mastercards);
                             System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
                             return true;
                         } catch (CloneNotSupportedException ex) {
                             Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
@@ -273,15 +307,89 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
         System.out.println("\tNo se puedo realizar el deposito");
         return false;
     }
+    
+    private boolean mismoUsuarioYProducto(Transaccion tA, Transaccion tV) {
+        return tA.getUsuario().equals(tV.getUsuario()) && (tA.getRecursoAfectado() == tV.getRecursoAfectado());
+    }
+    
+    private boolean hayConflicto(Transaccion t) {
+        
+        for (Map.Entry<Transaccion, Trans> pair : transaccionesActivas.entrySet()) {
+            if ( mismoUsuarioYProducto(pair.getKey(), t) ) {
+                if (t.getTipoTransaccion() == TipoTransaccion.ESCRITURA && pair.getKey().getTipoTransaccion() == TipoTransaccion.LECTURA) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean validar(Transaccion t) {
+        if (!hayConflicto(t)) {
+            try {
+                if (commit(t)) {
+                    System.out.println("Se hizo commit: " + visas);
+                    return true;
+                }
+            } catch (RemoteException ex) {
+                Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
+    }
+    
+    
 
     @Override
     public boolean puedeCommit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
+    private Producto buscarProducto(String usuario, TipoProducto tipoProducto) {
+        switch (tipoProducto) {
+            case CUENTA_AHORRO:
+                for (CuentaAhorro producto : ahorros) {
+                    if (producto.getUsuario().equals(usuario)) {
+                        return producto;
+                    }
+                }
+                return null;
+            case CUENTA_CORRIENTE:
+                for (CuentaCorriente producto : corrientes) {
+                    if (producto.getUsuario().equals(usuario)) {
+                        return producto;
+                    }
+                }
+                return null;
+            case TARJETA_MASTERCARD:
+                for (TarjetaMasterCard producto : mastercards) {
+                    if (producto.getUsuario().equals(usuario)) {
+                        return producto;
+                    }
+                }
+                return null;
+            case TARJETA_VISA:
+                for (TarjetaVisa producto : visas) {
+                    if (producto.getUsuario().equals(usuario)) {
+                        return producto;
+                    }
+                }
+                return null;
+        }
+        return null;
+    }
+    
     @Override
-    public boolean commit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean commit(Transaccion t) throws RemoteException {
+        Producto p = buscarProducto(t.getUsuario(), t.getRecursoAfectado());
+        p = transaccionesValidando.get(t);
+        if (transaccionesValidando.remove(t) == null) {
+            return false;
+        }
+        
+        t.setEstado(EstadoTransaccion.ACTUALIZANDO);
+        transaccionesConsumadas.put(t, p);
+        return true;
     }
 
     @Override

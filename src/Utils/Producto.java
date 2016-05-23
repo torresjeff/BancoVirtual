@@ -20,8 +20,8 @@ public class Producto {
         this.usuario = usuario;
     }
 
-    public Producto(int numeroTarjeta, String usuario) {
-        this.numeroProducto = numeroTarjeta;
+    public Producto(int numeroProducto, String usuario) {
+        this.numeroProducto = numeroProducto;
         this.usuario = usuario;
         this.saldo = 0;
     }
@@ -44,11 +44,11 @@ public class Producto {
         }
     }
 
-    public int getNumeroTarjeta() {
+    public int getNumeroProducto() {
         return numeroProducto;
     }
 
-    public void setNumeroTarjeta(int numeroTarjeta) {
+    public void setNumeroProducto(int numeroTarjeta) {
         this.numeroProducto = numeroTarjeta;
     }
 
@@ -63,4 +63,11 @@ public class Producto {
     public double getSaldo() {
         return saldo;
     }
+
+    @Override
+    public String toString() {
+        return "Producto{" + "numeroProducto=" + numeroProducto + ", saldo=" + saldo + ", usuario=" + usuario + '}';
+    }
+    
+    
 }
