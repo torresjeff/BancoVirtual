@@ -12,6 +12,21 @@ package Utils;
 public class TarjetaCredito {
     protected int numeroTarjeta;
     protected double saldo;
+    protected String usuario;
+
+    public TarjetaCredito(int numeroTarjeta, double saldo, String usuario) {
+        this.numeroTarjeta = numeroTarjeta;
+        this.saldo = saldo;
+        this.usuario = usuario;
+    }
+
+    public TarjetaCredito(int numeroTarjeta, String usuario) {
+        this.numeroTarjeta = numeroTarjeta;
+        this.usuario = usuario;
+        this.saldo = 0;
+    }
+    
+    
     
     public double consultar() {
         return saldo;
@@ -24,4 +39,27 @@ public class TarjetaCredito {
     public void retirar(double cantidad) {
         saldo -= cantidad;
     }
+
+    public int getNumeroTarjeta() {
+        return numeroTarjeta;
+    }
+
+    public void setNumeroTarjeta(int numeroTarjeta) {
+        this.numeroTarjeta = numeroTarjeta;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    @Override
+    public String toString() {
+        return "TarjetaCredito{" + "numeroTarjeta=" + numeroTarjeta + ", saldo=" + saldo + ", usuario=" + usuario + '}';
+    }
+    
+    
 }

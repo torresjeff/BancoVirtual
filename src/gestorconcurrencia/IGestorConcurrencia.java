@@ -15,9 +15,10 @@ import java.rmi.RemoteException;
  * @author manuela
  */
 public interface IGestorConcurrencia extends Remote {
-    public boolean iniciarSesion(int idUsuario, String password) throws RemoteException;
-    public double consultar(int idUsuario, TipoProducto tipo, int numeroProducto) throws RemoteException;
-    public boolean retirar(int idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
-    public boolean despositar(int idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
-    public boolean commit(Transaccion t) throws RemoteException;
+    public long abrirTransaccion(String idUsuario, String password) throws RemoteException;
+    public boolean cerrarTransaccion(long id) throws RemoteException;
+    public boolean abortarTransaccion(long id) throws RemoteException;
+    public double consultar(String idUsuario, TipoProducto tipo, int numeroProducto) throws RemoteException;
+    public long retirar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
+    public long despositar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
 }

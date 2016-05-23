@@ -5,10 +5,20 @@
  */
 package Utils;
 
+import java.io.Serializable;
+
 /**
  *
  * @author manuela
  */
-public class TarjetaMasterCard extends TarjetaCredito {
+public class TarjetaMasterCard extends TarjetaCredito implements Serializable {
+
+    public TarjetaMasterCard(int numeroTarjeta, double saldo, String usuario) {
+        super(numeroTarjeta, saldo, usuario);
+    }
+
+    public TarjetaMasterCard(int numeroTarjeta, String usuario) {
+        super(numeroTarjeta, usuario);
+    }
     
 }

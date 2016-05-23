@@ -15,9 +15,11 @@ import java.rmi.RemoteException;
  * @author manuela
  */
 public interface IBanco extends Remote {
-    public boolean iniciarSesion(Transaccion t) throws RemoteException;
-    public double consultar(Transaccion t) throws RemoteException;
-    public boolean retirar(Transaccion t) throws RemoteException;
-    public boolean despositar(Transaccion t) throws RemoteException;
-    public boolean commit(Transaccion t) throws RemoteException;
+    public boolean iniciarSesion(String usuario, String password) throws RemoteException;
+    public double consultar(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException;
+    public boolean retirar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t) throws RemoteException;
+    public boolean depositar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t) throws RemoteException;
+    public boolean puedeCommit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException;
+    public Boolean commit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException;
+    public Boolean rollback(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException;
 }
