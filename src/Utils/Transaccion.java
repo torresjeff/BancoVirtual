@@ -5,11 +5,13 @@
  */
 package Utils;
 
+import java.io.Serializable;
+
 /**
  *
  * @author manuela
  */
-public class Transaccion {
+public class Transaccion implements Serializable {
     private long id;
     private long hora;
     private EstadoTransaccion estado;
@@ -44,9 +46,17 @@ public class Transaccion {
     public TipoTransaccion getTipoTransaccion() {
         return tipoTransaccion;
     }
-    
-    
-    
-    
+
+    public EstadoTransaccion getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoTransaccion estado) {
+        this.estado = estado;
+    }
+
+    public long getHora() {
+        return hora;
+    }
     
 }

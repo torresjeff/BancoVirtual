@@ -27,18 +27,20 @@ public class Cuenta {
     }
     
     
-    
-    
     public double consultar() {
         return saldo;
     }
     
     public void depositar(double cantidad) {
-        saldo += cantidad;
+        if (cantidad > 0) {
+            saldo += cantidad;
+        }
     }
     
     public void retirar(double cantidad) {
-        saldo -= cantidad;
+        if (saldo >= cantidad) {
+            saldo -= cantidad;
+        }
     }
 
     public int getNumeroCuenta() {
@@ -56,6 +58,12 @@ public class Cuenta {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
+
+    public double getSaldo() {
+        return saldo;
+    }
+    
+    
 
     @Override
     public String toString() {

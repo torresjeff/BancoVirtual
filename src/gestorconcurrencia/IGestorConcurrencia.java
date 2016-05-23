@@ -19,6 +19,6 @@ public interface IGestorConcurrencia extends Remote {
     public boolean cerrarTransaccion(long id) throws RemoteException;
     public boolean abortarTransaccion(long id) throws RemoteException;
     public double consultar(String idUsuario, TipoProducto tipo, int numeroProducto) throws RemoteException;
-    public long retirar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
-    public long despositar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
+    public double retirar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
+    public double depositar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException;
 }

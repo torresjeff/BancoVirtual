@@ -8,6 +8,7 @@ package banco;
 import Utils.Auth;
 import Utils.CuentaAhorro;
 import Utils.CuentaCorriente;
+import Utils.EstadoTransaccion;
 import Utils.TarjetaMasterCard;
 import Utils.TarjetaVisa;
 import Utils.TipoProducto;
@@ -116,20 +117,48 @@ public class Banco implements IBanco, Serializable {
 
     @Override
     public double consultar(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
-        System.out.println("consultar()");
-        System.out.println("Auths: " + auths);
-        System.out.println("Usuarios: " + usuarios);
-        System.out.println("path: " + path);
-        return 1;
+        System.out.println("El usuario \"" + usuario + "\" desea consultar el saldo de su " + tipoProducto.toString());
+        
+        switch (tipoProducto) {
+            case TARJETA_VISA:
+                for (TarjetaVisa visa : visas) {
+                    if (visa.getUsuario().equals(usuario)) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        return visa.consultar();
+                    }
+                }
+            case TARJETA_MASTERCARD:
+                for (TarjetaMasterCard mastercard : mastercards) {
+                    if (mastercard.getUsuario().equals(usuario)) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        return mastercard.consultar();
+                    }
+                }
+            case CUENTA_AHORRO:
+                for (CuentaAhorro ahorro : ahorros) {
+                    if (ahorro.getUsuario().equals(usuario)) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        return ahorro.consultar();
+                    }
+                }
+            case CUENTA_CORRIENTE:
+                for (CuentaCorriente corriente : corrientes) {
+                    if (corriente.getUsuario().equals(usuario)) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        return corriente.consultar();
+                    }
+                }
+        }
+        return -1;
     }
 
     @Override
-    public boolean retirar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t) throws RemoteException {
+    public boolean retirar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t, int numeroProducto) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean depositar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t) throws RemoteException {
+    public boolean depositar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t, int numeroProducto) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -139,12 +168,12 @@ public class Banco implements IBanco, Serializable {
     }
 
     @Override
-    public Boolean commit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
+    public boolean commit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Boolean rollback(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
+    public boolean rollback(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

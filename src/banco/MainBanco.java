@@ -8,6 +8,7 @@ package banco;
 import Utils.Auth;
 import Utils.CuentaAhorro;
 import Utils.CuentaCorriente;
+import Utils.EstadoTransaccion;
 import Utils.TarjetaMasterCard;
 import Utils.TarjetaVisa;
 import Utils.TipoProducto;
@@ -132,17 +133,139 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
 
     @Override
     public double consultar(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("El usuario \"" + usuario + "\" desea consultar el saldo de su " + tipoProducto.toString());
+        
+        switch (tipoProducto) {
+            case TARJETA_VISA:
+                for (TarjetaVisa visa : visas) {
+                    if (visa.getUsuario().equals(usuario)) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        return visa.consultar();
+                    }
+                }
+            case TARJETA_MASTERCARD:
+                for (TarjetaMasterCard mastercard : mastercards) {
+                    if (mastercard.getUsuario().equals(usuario)) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        return mastercard.consultar();
+                    }
+                }
+            case CUENTA_AHORRO:
+                for (CuentaAhorro ahorro : ahorros) {
+                    if (ahorro.getUsuario().equals(usuario)) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        return ahorro.consultar();
+                    }
+                }
+            case CUENTA_CORRIENTE:
+                for (CuentaCorriente corriente : corrientes) {
+                    if (corriente.getUsuario().equals(usuario)) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        return corriente.consultar();
+                    }
+                }
+        }
+        return -1;
     }
 
     @Override
-    public boolean retirar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean retirar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t, int numeroProducto) throws RemoteException {
+        System.out.println("El usuario \"" + usuario + "\" desea retirar " + cantidad + " pesos de su " + tipoProducto.toString());
+        
+        switch (tipoProducto) {
+            case TARJETA_VISA:
+                for (TarjetaVisa producto : visas) {
+                    if (producto.getUsuario().equals(usuario) && producto.getSaldo() >= cantidad) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        producto.retirar(cantidad);
+                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                        return true;
+                    }
+                }
+                break;
+            case TARJETA_MASTERCARD:
+                for (TarjetaMasterCard producto : mastercards) {
+                    if (producto.getUsuario().equals(usuario) && producto.getSaldo() >= cantidad) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        producto.retirar(cantidad);
+                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                        return true;
+                    }
+                }
+                break;
+            case CUENTA_AHORRO:
+                for (CuentaAhorro producto : ahorros) {
+                    if (producto.getUsuario().equals(usuario) && producto.getSaldo() >= cantidad) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        producto.retirar(cantidad);
+                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                        return true;
+                    }
+                }
+                break;
+            case CUENTA_CORRIENTE:
+                for (CuentaCorriente producto : corrientes) {
+                    if (producto.getUsuario().equals(usuario) && producto.getSaldo() >= cantidad) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        producto.retirar(cantidad);
+                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                        return true;
+                    }
+                }
+                break;
+        }
+        System.out.println("\tSaldo insuficiente");
+        return false;
     }
 
     @Override
-    public boolean depositar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean depositar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t, int numeroProducto) throws RemoteException {
+        System.out.println("El usuario \"" + usuario + "\" desea depositar " + cantidad + " pesos de su " + tipoProducto.toString());
+        
+        switch (tipoProducto) {
+            case TARJETA_VISA:
+                for (TarjetaVisa producto : visas) {
+                    if (producto.getUsuario().equals(usuario) && cantidad > 0) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        producto.depositar(cantidad);
+                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                        return true;
+                    }
+                }
+                break;
+            case TARJETA_MASTERCARD:
+                for (TarjetaMasterCard producto : mastercards) {
+                    if (producto.getUsuario().equals(usuario) && cantidad > 0) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        producto.depositar(cantidad);
+                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                        return true;
+                    }
+                }
+                break;
+            case CUENTA_AHORRO:
+                for (CuentaAhorro producto : ahorros) {
+                    if (producto.getUsuario().equals(usuario) && cantidad > 0) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        producto.depositar(cantidad);
+                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                        return true;
+                    }
+                }
+                break;
+            case CUENTA_CORRIENTE:
+                for (CuentaCorriente producto : corrientes) {
+                    if (producto.getUsuario().equals(usuario) && cantidad > 0) {
+                        t.setEstado(EstadoTransaccion.VALIDANDO);
+                        producto.depositar(cantidad);
+                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                        return true;
+                    }
+                }
+                break;
+        }
+        System.out.println("\tNo se puedo realizar el deposito");
+        return false;
     }
 
     @Override
@@ -151,12 +274,12 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     }
 
     @Override
-    public Boolean commit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
+    public boolean commit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Boolean rollback(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
+    public boolean rollback(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

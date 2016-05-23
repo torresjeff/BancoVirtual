@@ -139,18 +139,77 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
             case CUENTA_CORRIENTE:
                 return bancoCorrientes.consultar(idUsuario, tipo, t);
         }
+        //TODO: quitar de lista de activas y pasar a validando
+        return -1;
+    }
+
+    @Override
+    public synchronized double retirar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException {
+        
+        Transaccion t = crearTransaccion(TipoTransaccion.ESCRITURA);
+        t.setUsuario(idUsuario);
+        
+        switch (tipo)
+        {
+            case TARJETA_VISA:
+                if (bancoVisas.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                    return cantidad;
+                }
+                break;
+            case TARJETA_MASTERCARD:
+                if (bancoMastercards.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                    return cantidad;
+                }
+                break;
+            case CUENTA_AHORRO:
+                if (bancoAhorros.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                    return cantidad;
+                }
+                break;
+            case CUENTA_CORRIENTE:
+                if (bancoCorrientes.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                    return cantidad;
+                }
+                break;
+        }
+        
+        //TODO: quitar de lista de activas y pasar a validando
         
         return -1;
     }
 
     @Override
-    public long retirar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public long despositar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public double depositar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException {
+        Transaccion t = crearTransaccion(TipoTransaccion.ESCRITURA);
+        t.setUsuario(idUsuario);
+        
+        switch (tipo)
+        {
+            case TARJETA_VISA:
+                if (bancoVisas.depositar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                    return cantidad;
+                }
+                break;
+            case TARJETA_MASTERCARD:
+                if (bancoMastercards.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                    return cantidad;
+                }
+                break;
+            case CUENTA_AHORRO:
+                if (bancoAhorros.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                    return cantidad;
+                }
+                break;
+            case CUENTA_CORRIENTE:
+                if (bancoCorrientes.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                    return cantidad;
+                }
+                break;
+        }
+        
+        //TODO: quitar de lista de activas y pasar a validando
+        
+        return -1;
     }
     
     

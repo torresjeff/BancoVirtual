@@ -47,8 +47,15 @@ public class MainCliente {
             gestor.abrirTransaccion(usuario, pass);
             
             // CONSULTAR
-            //double consulta = gestor.consultar("jeff", TipoProducto.TARJETA_VISA, 1);
-            //System.out.println("consulta: " + consulta);
+            double consulta = gestor.consultar(usuario, TipoProducto.TARJETA_VISA, 1);
+            System.out.println("consulta: " + consulta);
+            // RETIRAR
+            double retiro = gestor.retirar(usuario, TipoProducto.TARJETA_VISA, 1, 20000);
+            System.out.println("retiro: " + retiro);
+            // DEPOSITAR
+            double deposito = gestor.depositar(usuario, TipoProducto.TARJETA_VISA, 1, 55000);
+            System.out.println("deposito: " + deposito);
+            
         } catch (RemoteException ex) {
             Logger.getLogger(MainCliente.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
