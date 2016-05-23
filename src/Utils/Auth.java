@@ -11,6 +11,32 @@ package Utils;
  */
 
 public class Auth {
-    int id;
-    String pasword;
+    private String id;
+    private String pasword;
+
+    public Auth(String id, String pasword) {
+        this.id = id;
+        this.pasword = pasword;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPasword() {
+        return pasword;
+    }
+
+    public void setPasword(String pasword) {
+        this.pasword = pasword;
+    }
+
+    @Override
+    public String toString() {
+        return "Auth{" + "id=" + id + ", pasword=" + pasword + '}';
+    }
 }

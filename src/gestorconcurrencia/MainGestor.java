@@ -15,7 +15,8 @@ import java.util.logging.Logger;
  * @author manuela
  */
 public class MainGestor {
-    private static final String IP = "192.168.0.3"; //IP de este computador
+    //private static final String IP = "192.168.0.3"; //IP de este computador
+    private static final String IP = "127.0.0.1"; //Test misma maquina
     private static final int PUERTO = 8080;
     
     public static void main(String[] args) {
@@ -23,6 +24,7 @@ public class MainGestor {
         try {
             LocateRegistry.createRegistry(PUERTO);
             GestorConcurrencia gestor = new GestorConcurrencia("rmi://"+IP+":"+PUERTO+"/GestorConcurrencia");
+            System.out.println("El gestor está ejecutandose....");
             
         } catch (RemoteException ex) {
             Logger.getLogger(MainGestor.class.getName()).log(Level.SEVERE, null, ex);

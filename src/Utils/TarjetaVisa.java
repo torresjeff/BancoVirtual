@@ -5,10 +5,20 @@
  */
 package Utils;
 
+import java.io.Serializable;
+
 /**
  *
  * @author manuela
  */
-public class TarjetaVisa extends TarjetaCredito {
+public class TarjetaVisa extends TarjetaCredito implements Serializable {
+
+    public TarjetaVisa(int numeroTarjeta, double saldo, String usuario) {
+        super(numeroTarjeta, saldo, usuario);
+    }
+
+    public TarjetaVisa(int numeroTarjeta, String usuario) {
+        super(numeroTarjeta, usuario);
+    }
     
 }

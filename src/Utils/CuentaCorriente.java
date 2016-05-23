@@ -5,10 +5,20 @@
  */
 package Utils;
 
+import java.io.Serializable;
+
 /**
  *
  * @author manuela
  */
-public class CuentaCorriente extends Cuenta {
+public class CuentaCorriente extends Cuenta implements Serializable {
+
+    public CuentaCorriente(int numeroCuenta, double saldo, String usuario) {
+        super(numeroCuenta, saldo, usuario);
+    }
+
+    public CuentaCorriente(int numeroCuenta, String usuario) {
+        super(numeroCuenta, usuario);
+    }
     
 }
