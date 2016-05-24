@@ -98,16 +98,7 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
         t.setUsuario(idUsuario);
         return t.getId();
     }
-
-    @Override
-    public boolean cerrarTransaccion(long id) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean abortarTransaccion(long id) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 
     @Override
     public double consultar(String idUsuario, TipoProducto tipo, int numeroProducto) throws RemoteException {
