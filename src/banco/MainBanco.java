@@ -6,6 +6,7 @@
 package banco;
 
 import Utils.Auth;
+import Utils.Cuenta;
 import Utils.CuentaAhorro;
 import Utils.CuentaCorriente;
 import Utils.EstadoTransaccion;
@@ -16,13 +17,15 @@ import Utils.TipoProducto;
 import Utils.TipoTransaccion;
 import Utils.Transaccion;
 import Utils.Usuario;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -34,8 +37,14 @@ import java.util.logging.Logger;
  * @author manuela
  */
 public class MainBanco extends UnicastRemoteObject implements IBanco{
-    private static final String IP = "127.0.0.1"; //Test misma maquina
-    private static final int PUERTO = 1099;
+    public static final String VISA_IP = "127.0.0.1"; //Test misma maquina
+    public static final int VISA_PUERTO = 1099;
+    public final static String MASTER_IP="127.0.0.1";
+    public final static int MASTER_PUERTO = 1099;
+    public final static String AHORRO_IP="127.0.0.1";
+    public final static int AHORRO_PUERTO = 1099; 
+    public final static String CORRIENTE_IP = "127.0.0.1";
+    public final static int CORRIENTE_PUERTO = 1099;
     
     private ArrayList<Auth> auths;
     private ArrayList<Usuario> usuarios;
@@ -62,17 +71,52 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     
     public static void main(String[] args) {
         try {
-            System.setProperty("java.rmi.server.hostname", IP);
-            LocateRegistry.createRegistry(PUERTO);
-            final String url = "rmi://"+IP+":"+PUERTO+"/Visa";
+            InputStreamReader reader = new InputStreamReader(System.in);
+            BufferedReader in = new BufferedReader(reader);
+            
+            //System.setProperty("java.rmi.server.hostname", VISA_IP);
+            //LocateRegistry.createRegistry(VISA_PUERTO);
+            
+            String url;
+            System.out.println("Ingrese el tipo de banco: ");
+            System.out.println("1. Visa");
+            System.out.println("2. MasterCard");
+            System.out.println("3. Cuentas de Ahorro");
+            System.out.println("4. Cuentas Corrientes");
+            
+            int tipo = Integer.parseInt(in.readLine());
+            switch (tipo) {
+                case 1:
+                    url = "rmi://"+VISA_IP+":"+VISA_PUERTO+"/Visa";
+                    LocateRegistry.createRegistry(VISA_PUERTO);
+                    break;
+                case 2:
+                    url = "rmi://"+MASTER_IP+":"+MASTER_PUERTO+"/Mastercard";
+                    LocateRegistry.createRegistry(MASTER_PUERTO);
+                    break;
+                case 3:
+                    url = "rmi://"+AHORRO_IP+":"+AHORRO_PUERTO+"/Ahorro";
+                    LocateRegistry.createRegistry(AHORRO_PUERTO);
+                    break;
+                case 4:
+                    url = "rmi://"+CORRIENTE_IP+":"+CORRIENTE_PUERTO+"/Corriente";
+                    LocateRegistry.createRegistry(CORRIENTE_PUERTO);
+                    break;
+                default:
+                    url = "invalid";
+                    System.out.println("Opcion invalida");
+            }
+            System.out.println("URL: " + url);
             
             Naming.rebind(url, new MainBanco());
             
-            System.out.println("El banco de Visas está ejecutandose....");
+            System.out.println("El servicio del banco se está ejecutando....");
             //for(;;) LockSupport.park();
         } catch (RemoteException ex) {
             Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
+            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -97,7 +141,6 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     }
     
     private void agregarUsuarios() {
-        System.out.println("agregarUsuarios()");
         Auth auth = new Auth("jeff", "abcd");
         auths.add(auth);
     }
@@ -200,7 +243,7 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             
                             System.out.println("\tcopia temporal = " + p);
                             System.out.println("\tvisas = " + visas);
-                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            System.out.println("\tNuevo saldo: " + p.getSaldo());
                             
                             transaccionesActivas.remove(t);
                             if (transaccionesActivas.contains(t)) {
@@ -230,9 +273,9 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             Producto p = (Producto)producto.clone();
                             p.retirar(cantidad);
                             
-                            System.out.println("\tp = " + p);
+                            System.out.println("\tcopia temporal = " + p);
                             System.out.println("\tmastercards = " + mastercards);
-                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            System.out.println("\tNuevo saldo: " + p.getSaldo());
                             
                             transaccionesActivas.remove(t);
                             if (transaccionesActivas.contains(t)) {
@@ -262,9 +305,9 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             Producto p = (Producto)producto.clone();
                             p.retirar(cantidad);
                             
-                            System.out.println("\tp = " + p);
+                            System.out.println("\tcopia temporal = " + p);
                             System.out.println("\tahorros = " + ahorros);
-                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            System.out.println("\tNuevo saldo: " + p.getSaldo());
                             
                             transaccionesActivas.remove(t);
                             if (transaccionesActivas.contains(t)) {
@@ -294,9 +337,9 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             Producto p = (Producto)producto.clone();
                             p.retirar(cantidad);
                             
-                            System.out.println("\tp = " + p);
+                            System.out.println("\tcopia temporal = " + p);
                             System.out.println("\tcorrientes = " + corrientes);
-                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            System.out.println("\tNuevo saldo: " + p.getSaldo());
                             
                             transaccionesActivas.remove(t);
                             if (transaccionesActivas.contains(t)) {
@@ -339,9 +382,9 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             Producto p = (Producto)producto.clone();
                             p.depositar(cantidad);
                             
-                            System.out.println("\tp = " + p);
+                            System.out.println("\tcopia temporal = " + p);
                             System.out.println("\tvisas = " + visas);
-                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            System.out.println("\tNuevo saldo: " + p.getSaldo());
                             
                             transaccionesActivas.remove(t);
                             if (transaccionesActivas.contains(t)) {
@@ -367,9 +410,9 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             Producto p = (Producto)producto.clone();
                             p.depositar(cantidad);
                             transaccionesValidando.put(t, p);
-                            System.out.println("\tp = " + p);
+                            System.out.println("\tcopia temporal = " + p);
                             System.out.println("\tmastercards = " + mastercards);
-                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            System.out.println("\tNuevo saldo: " + p.getSaldo());
                             t.setEstado(EstadoTransaccion.VALIDANDO);
                             
                             transaccionesActivas.remove(t);
@@ -396,9 +439,9 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             Producto p = (Producto)producto.clone();
                             p.depositar(cantidad);
                             transaccionesValidando.put(t, p);
-                            System.out.println("\tp = " + p);
+                            System.out.println("\tcopia temporal = " + p);
                             System.out.println("\tmastercards = " + mastercards);
-                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            System.out.println("\tNuevo saldo: " + p.getSaldo());
                             t.setEstado(EstadoTransaccion.VALIDANDO);
                             
                             transaccionesActivas.remove(t);
@@ -425,9 +468,9 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             Producto p = (Producto)producto.clone();
                             p.depositar(cantidad);
                             transaccionesValidando.put(t, p);
-                            System.out.println("\tp = " + p);
+                            System.out.println("\tcopia temporal = " + p);
                             System.out.println("\tmastercards = " + mastercards);
-                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            System.out.println("\tNuevo saldo: " + p.getSaldo());
                             t.setEstado(EstadoTransaccion.VALIDANDO);
                             
                             transaccionesActivas.remove(t);
@@ -456,11 +499,12 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
         return tA.getUsuario().equals(tV.getUsuario()) && (tA.getRecursoAfectado() == tV.getRecursoAfectado());
     }
     
-    private boolean hayConflicto(Transaccion t) {
+    private boolean hayConflicto(Transaccion Tv) {
         
         for (Map.Entry<Transaccion, Trans> pair : transaccionesActivas.entrySet()) {
-            if ( mismoUsuarioYProducto(pair.getKey(), t) ) {
-                if (t.getTipoTransaccion() == TipoTransaccion.ESCRITURA && pair.getKey().getTipoTransaccion() == TipoTransaccion.LECTURA) {
+            if ( mismoUsuarioYProducto(pair.getKey(), Tv) ) {
+                if (Tv.getTipoTransaccion() == TipoTransaccion.ESCRITURA && pair.getKey().getTipoTransaccion() == TipoTransaccion.LECTURA) {
+                    System.out.println("Existen conflictos. Abortando transaccion.");
                     return true;
                 }
             }
@@ -475,13 +519,18 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                     if (visas == null) {
                         System.out.println("\tvisas = null"); 
                     }
-                    System.out.println("\tSe hizo commit: " + visas);
+                    System.out.println("\tSe hizo commit: ");
+                    System.out.println("\t\tvisas: " + visas);
+                    System.out.println("\t\tmastercards: " + mastercards);
+                    System.out.println("\t\tahorros: " + ahorros);
+                    System.out.println("\t\tcorrientes: " + corrientes);
                     return true;
                 }
             } catch (RemoteException ex) {
                 Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        transaccionesValidando.remove(t);
         System.out.println("\tNo se pudo commit");
         return false;
     }
@@ -541,10 +590,12 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
         
         switch (t.getRecursoAfectado()) {
             case CUENTA_AHORRO:
-                ahorros.set(index, (CuentaAhorro)p);
+                //ahorros.set(index, (CuentaAhorro)p);
+                ahorros.set(index, new CuentaAhorro((Cuenta)p));
                 break;
             case CUENTA_CORRIENTE:
-                corrientes.set(index, (CuentaCorriente)p);
+                //corrientes.set(index, (CuentaCorriente)p);
+                corrientes.set(index, new CuentaCorriente((Cuenta)p));
                 break;
             case TARJETA_MASTERCARD:
                 mastercards.set(index, (TarjetaMasterCard)p);
@@ -562,7 +613,7 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
 
     @Override
     public boolean rollback(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
-        // TODO: leer de la ultima actualizacion del archivo de texto
+        //No hace nada porque en ningun momento se cambiaron los valores originales, simplemente no se hace commit de la transaccion
         return true;
     }
 

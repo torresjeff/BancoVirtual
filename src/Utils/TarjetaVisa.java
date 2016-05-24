@@ -12,6 +12,12 @@ import java.io.Serializable;
  * @author manuela
  */
 public class TarjetaVisa extends TarjetaCredito implements Serializable {
+    
+    public TarjetaVisa(TarjetaCredito tc) {
+        this.numeroProducto = tc.numeroProducto;
+        this.saldo = tc.saldo;
+        this.usuario = tc.usuario;
+    }
 
     public TarjetaVisa(int numeroTarjeta, double saldo, String usuario) {
         super(numeroTarjeta, saldo, usuario);

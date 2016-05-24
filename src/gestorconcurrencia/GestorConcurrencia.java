@@ -30,20 +30,17 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
     public final static String VISA_IP="127.0.0.1";
     public final static String VISA_PUERTO="1099";
     public final static String MASTER_IP="127.0.0.1";
-    public final static String MASTER_PUERTO="";
+    public final static String MASTER_PUERTO="1099";
     public final static String AHORRO_IP="127.0.0.1";
-    public final static String AHORRO_PUERTO="";
+    public final static String AHORRO_PUERTO="1099";
     public final static String CORRIENTE_IP="127.0.0.1";
-    public final static String CORRIENTE_PUERTO="";
+    public final static String CORRIENTE_PUERTO="1099";
     
     private IBanco bancoVisas;
     private IBanco bancoMastercards;
     private IBanco bancoAhorros;
     private IBanco bancoCorrientes;
     private long transaccionesTotales;
-    private ConcurrentHashMap<Long, Transaccion> transaccionesActivas;
-    private ConcurrentHashMap<Long, Transaccion> transaccionesConsumadas;
-    private ConcurrentHashMap<Long, Transaccion> transaccionesValidando;
     
     public GestorConcurrencia(String path) throws RemoteException {
         super();
@@ -54,16 +51,9 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
             
             
             bancoVisas = (IBanco) Naming.lookup("//"+VISA_IP+":"+VISA_PUERTO+"/Visa");
-            if (bancoVisas == null) {
-                System.out.println("no se pudo encontrar el banco de visas");
-            }
             //bancoMastercards = (IBanco) Naming.lookup("//"+MASTER_IP+":"+MASTER_PUERTO+"/Mastercard");
             //bancoAhorros = (IBanco) Naming.lookup("//"+AHORRO_IP+":"+AHORRO_PUERTO+"/Ahorro");
             //bancoCorrientes = (IBanco) Naming.lookup("//"+CORRIENTE_IP+":"+CORRIENTE_PUERTO+"/Corriente");
-            
-            transaccionesActivas = new ConcurrentHashMap<>();
-            transaccionesConsumadas = new ConcurrentHashMap<>();
-            transaccionesValidando = new ConcurrentHashMap<>();
             
             transaccionesTotales = 0;
         } catch (MalformedURLException ex) {
@@ -76,7 +66,6 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
     private Transaccion crearTransaccion(String usuario, TipoTransaccion tipoTransaccion, TipoProducto tipoProducto) {
         transaccionesTotales++;
         Transaccion t = new Transaccion(usuario, transaccionesTotales, tipoTransaccion, tipoProducto);
-        transaccionesActivas.put(transaccionesTotales, t);
         return t;
     }
     
@@ -85,28 +74,25 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
     public long abrirTransaccion(String idUsuario, String password) throws RemoteException {
         
         System.out.println("Iniciando sesion: idUsuario: " + idUsuario + ", pass: " + password);
-        if (bancoVisas == null) {
-            System.out.println("bancoVisas = null");
+        if (bancoVisas == null && bancoMastercards == null && bancoAhorros == null && bancoCorrientes == null) {
+            return -1;
         }
-        else {
-            System.out.println("bancoVisas != null");
-        }
-        if (!bancoVisas.iniciarSesion(idUsuario, password))
+        if (bancoVisas != null && !bancoVisas.iniciarSesion(idUsuario, password))
         {
             return -1;
         }
-        /*if (!bancoMastercards.iniciarSesion(idUsuario, password))
+        if (bancoMastercards != null && !bancoMastercards.iniciarSesion(idUsuario, password))
         {
             return -1;
         }
-        if (!bancoAhorros.iniciarSesion(idUsuario, password))
+        if (bancoAhorros != null && !bancoAhorros.iniciarSesion(idUsuario, password))
         {
             return -1;
         }
-        if (!bancoCorrientes.iniciarSesion(idUsuario, password))
+        if (bancoCorrientes != null && !bancoCorrientes.iniciarSesion(idUsuario, password))
         {
             return -1;
-        }*/
+        }
         
         Transaccion t = crearTransaccion(idUsuario, TipoTransaccion.LECTURA, TipoProducto.CUENTA_USUARIO);
         t.setUsuario(idUsuario);
@@ -144,7 +130,7 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
     }
 
     @Override
-    public synchronized double retirar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException {
+    public double retirar(String idUsuario, TipoProducto tipo, int numeroProducto, double cantidad) throws RemoteException {
         
         Transaccion t = crearTransaccion(idUsuario, TipoTransaccion.ESCRITURA, tipo);
         t.setUsuario(idUsuario);
@@ -173,8 +159,6 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
                 break;
         }
         
-        //TODO: quitar de lista de activas y pasar a validando
-        
         return -1;
     }
 
@@ -191,17 +175,17 @@ public class GestorConcurrencia extends UnicastRemoteObject implements IGestorCo
                 }
                 break;
             case TARJETA_MASTERCARD:
-                if (bancoMastercards.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                if (bancoMastercards.depositar(idUsuario, tipo, cantidad, t, numeroProducto)) {
                     return cantidad;
                 }
                 break;
             case CUENTA_AHORRO:
-                if (bancoAhorros.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                if (bancoAhorros.depositar(idUsuario, tipo, cantidad, t, numeroProducto)) {
                     return cantidad;
                 }
                 break;
             case CUENTA_CORRIENTE:
-                if (bancoCorrientes.retirar(idUsuario, tipo, cantidad, t, numeroProducto)) {
+                if (bancoCorrientes.depositar(idUsuario, tipo, cantidad, t, numeroProducto)) {
                     return cantidad;
                 }
                 break;

@@ -13,6 +13,12 @@ public class Producto {
     protected int numeroProducto;
     protected double saldo;
     protected String usuario;
+    
+    public Producto() {
+        numeroProducto = -1;
+        saldo = -1;
+        usuario = "";
+    }
 
     public Producto(int numeroProducto, double saldo, String usuario) {
         this.numeroProducto = numeroProducto;

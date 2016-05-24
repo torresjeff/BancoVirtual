@@ -10,7 +10,10 @@ package Utils;
  * @author manuela
  */
 public class Cuenta extends Producto {
-
+    
+    public Cuenta() {
+        super();
+    }
     public Cuenta(int numeroCuenta, double saldo, String usuario) {
         super(numeroCuenta, saldo, usuario);
     }
@@ -21,7 +24,6 @@ public class Cuenta extends Producto {
 
     @Override
     public Cuenta clone() throws CloneNotSupportedException {
-        super.clone();
         return new Cuenta(numeroProducto, saldo, usuario); //To change body of generated methods, choose Tools | Templates.
     }
     
