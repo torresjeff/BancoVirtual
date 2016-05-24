@@ -276,7 +276,18 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
                             System.out.println("\tmastercards = " + mastercards);
                             System.out.println("\tNuevo saldo: " + producto.getSaldo());
                             t.setEstado(EstadoTransaccion.VALIDANDO);
-                            return true;
+                            
+                            transaccionesActivas.remove(t);
+                            if (transaccionesActivas.contains(t)) {
+                                System.out.println("\tNo se pudo remover la transaccion " + t);
+                            }
+                            else {
+                                System.out.println("\tPasando la transaccion a estado de Validacion");
+                            }
+                            
+                            transaccionesValidando.put(t, p);
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            return validar(t);
                         } catch (CloneNotSupportedException ex) {
                             Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -286,20 +297,58 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
             case CUENTA_AHORRO:
                 for (CuentaAhorro producto : ahorros) {
                     if (producto.getUsuario().equals(usuario) && cantidad > 0) {
-                        t.setEstado(EstadoTransaccion.VALIDANDO);
-                        producto.depositar(cantidad);
-                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
-                        return true;
+                        try {
+                            Producto p = (Producto)producto.clone();
+                            p.depositar(cantidad);
+                            transaccionesValidando.put(t, p);
+                            System.out.println("\tp = " + p);
+                            System.out.println("\tmastercards = " + mastercards);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            
+                            transaccionesActivas.remove(t);
+                            if (transaccionesActivas.contains(t)) {
+                                System.out.println("\tNo se pudo remover la transaccion " + t);
+                            }
+                            else {
+                                System.out.println("\tPasando la transaccion a estado de Validacion");
+                            }
+                            
+                            transaccionesValidando.put(t, p);
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            return validar(t);
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
                 break;
             case CUENTA_CORRIENTE:
                 for (CuentaCorriente producto : corrientes) {
                     if (producto.getUsuario().equals(usuario) && cantidad > 0) {
-                        t.setEstado(EstadoTransaccion.VALIDANDO);
-                        producto.depositar(cantidad);
-                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
-                        return true;
+                        try {
+                            Producto p = (Producto)producto.clone();
+                            p.depositar(cantidad);
+                            transaccionesValidando.put(t, p);
+                            System.out.println("\tp = " + p);
+                            System.out.println("\tmastercards = " + mastercards);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            
+                            transaccionesActivas.remove(t);
+                            if (transaccionesActivas.contains(t)) {
+                                System.out.println("\tNo se pudo remover la transaccion " + t);
+                            }
+                            else {
+                                System.out.println("\tPasando la transaccion a estado de Validacion");
+                            }
+                            
+                            transaccionesValidando.put(t, p);
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            return validar(t);
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
                 break;
@@ -339,53 +388,73 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     }
     
     
-
-    @Override
-    public boolean puedeCommit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
-    private Producto buscarProducto(String usuario, TipoProducto tipoProducto) {
+    private int buscarProducto(String usuario, TipoProducto tipoProducto) {
+        int i = 0;
         switch (tipoProducto) {
             case CUENTA_AHORRO:
                 for (CuentaAhorro producto : ahorros) {
                     if (producto.getUsuario().equals(usuario)) {
-                        return producto;
+                        return i;
                     }
+                    i++;
                 }
-                return null;
+                return -1;
             case CUENTA_CORRIENTE:
                 for (CuentaCorriente producto : corrientes) {
                     if (producto.getUsuario().equals(usuario)) {
-                        return producto;
+                        return i;
                     }
+                    i++;
                 }
-                return null;
+                return -1;
             case TARJETA_MASTERCARD:
                 for (TarjetaMasterCard producto : mastercards) {
                     if (producto.getUsuario().equals(usuario)) {
-                        return producto;
+                        return i;
                     }
+                    i++;
                 }
-                return null;
+                return -1;
             case TARJETA_VISA:
                 for (TarjetaVisa producto : visas) {
                     if (producto.getUsuario().equals(usuario)) {
-                        return producto;
+                        return i;
                     }
+                    i++;
                 }
-                return null;
+                return -1;
         }
-        return null;
+        return -1;
     }
     
     @Override
     public boolean commit(Transaccion t) throws RemoteException {
-        Producto p = buscarProducto(t.getUsuario(), t.getRecursoAfectado());
-        p = transaccionesValidando.get(t);
-        if (transaccionesValidando.remove(t) == null) {
+        int index = buscarProducto(t.getUsuario(), t.getRecursoAfectado());
+        if (index == -1) {
             return false;
         }
+        
+        Producto p = transaccionesValidando.remove(t);
+        if (p == null) {
+            return false;
+        }
+        
+        switch (t.getRecursoAfectado()) {
+            case CUENTA_AHORRO:
+                ahorros.set(index, (CuentaAhorro)transaccionesValidando.get(t));
+                break;
+            case CUENTA_CORRIENTE:
+                corrientes.set(index, (CuentaCorriente)transaccionesValidando.get(t));
+                break;
+            case TARJETA_MASTERCARD:
+                mastercards.set(index, (TarjetaMasterCard)transaccionesValidando.get(t));
+                break;
+            case TARJETA_VISA:
+                visas.set(index, (TarjetaVisa)transaccionesValidando.get(t));
+                break;
+        }
+        
         
         t.setEstado(EstadoTransaccion.ACTUALIZANDO);
         transaccionesConsumadas.put(t, p);
@@ -394,7 +463,8 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
 
     @Override
     public boolean rollback(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: leer de la ultima actualizacion del archivo de texto
+        return true;
     }
 
     
