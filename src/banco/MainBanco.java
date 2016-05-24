@@ -184,45 +184,134 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     @Override
     public boolean retirar(String usuario, TipoProducto tipoProducto, double cantidad, Transaccion t, int numeroProducto) throws RemoteException {
         System.out.println("El usuario \"" + usuario + "\" desea retirar " + cantidad + " pesos de su " + tipoProducto.toString());
-        
+        Trans trans = new Trans(tipoProducto, t.getTipoTransaccion());
+        transaccionesActivas.put(t, trans);
         switch (tipoProducto) {
             case TARJETA_VISA:
                 for (TarjetaVisa producto : visas) {
                     if (producto.getUsuario().equals(usuario) && producto.getSaldo() >= cantidad) {
-                        t.setEstado(EstadoTransaccion.VALIDANDO);
-                        producto.retirar(cantidad);
-                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
-                        return true;
+                        try {
+                            /*t.setEstado(EstadoTransaccion.VALIDANDO);
+                            producto.retirar(cantidad);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            return true;*/
+                            Producto p = (Producto)producto.clone();
+                            p.retirar(cantidad);
+                            
+                            System.out.println("\tcopia temporal = " + p);
+                            System.out.println("\tvisas = " + visas);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            
+                            transaccionesActivas.remove(t);
+                            if (transaccionesActivas.contains(t)) {
+                                System.out.println("\tNo se pudo remover la transaccion " + t);
+                            }
+                            else {
+                                System.out.println("\tPasando la transaccion a estado de Validacion");
+                            }
+                            
+                            transaccionesValidando.put(t, p);
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            return validar(t);
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
                 break;
             case TARJETA_MASTERCARD:
                 for (TarjetaMasterCard producto : mastercards) {
                     if (producto.getUsuario().equals(usuario) && producto.getSaldo() >= cantidad) {
-                        t.setEstado(EstadoTransaccion.VALIDANDO);
-                        producto.retirar(cantidad);
-                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
-                        return true;
+                        try {
+                            /*t.setEstado(EstadoTransaccion.VALIDANDO);
+                            producto.retirar(cantidad);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            return true;*/
+                            Producto p = (Producto)producto.clone();
+                            p.retirar(cantidad);
+                            
+                            System.out.println("\tp = " + p);
+                            System.out.println("\tmastercards = " + mastercards);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            
+                            transaccionesActivas.remove(t);
+                            if (transaccionesActivas.contains(t)) {
+                                System.out.println("\tNo se pudo remover la transaccion " + t);
+                            }
+                            else {
+                                System.out.println("\tPasando la transaccion a estado de Validacion");
+                            }
+                            
+                            transaccionesValidando.put(t, p);
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            return validar(t);
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
                 break;
             case CUENTA_AHORRO:
                 for (CuentaAhorro producto : ahorros) {
                     if (producto.getUsuario().equals(usuario) && producto.getSaldo() >= cantidad) {
-                        t.setEstado(EstadoTransaccion.VALIDANDO);
-                        producto.retirar(cantidad);
-                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
-                        return true;
+                        try {
+                            /*t.setEstado(EstadoTransaccion.VALIDANDO);
+                            producto.retirar(cantidad);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            return true;*/
+                            Producto p = (Producto)producto.clone();
+                            p.retirar(cantidad);
+                            
+                            System.out.println("\tp = " + p);
+                            System.out.println("\tahorros = " + ahorros);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            
+                            transaccionesActivas.remove(t);
+                            if (transaccionesActivas.contains(t)) {
+                                System.out.println("\tNo se pudo remover la transaccion " + t);
+                            }
+                            else {
+                                System.out.println("\tPasando la transaccion a estado de Validacion");
+                            }
+                            
+                            transaccionesValidando.put(t, p);
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            return validar(t);
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
                 break;
             case CUENTA_CORRIENTE:
                 for (CuentaCorriente producto : corrientes) {
                     if (producto.getUsuario().equals(usuario) && producto.getSaldo() >= cantidad) {
-                        t.setEstado(EstadoTransaccion.VALIDANDO);
-                        producto.retirar(cantidad);
-                        System.out.println("\tNuevo saldo: " + producto.getSaldo());
-                        return true;
+                        try {
+                            /*t.setEstado(EstadoTransaccion.VALIDANDO);
+                            producto.retirar(cantidad);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            return true;*/
+                            Producto p = (Producto)producto.clone();
+                            p.retirar(cantidad);
+                            
+                            System.out.println("\tp = " + p);
+                            System.out.println("\tcorrientes = " + corrientes);
+                            System.out.println("\tNuevo saldo: " + producto.getSaldo());
+                            
+                            transaccionesActivas.remove(t);
+                            if (transaccionesActivas.contains(t)) {
+                                System.out.println("\tNo se pudo remover la transaccion " + t);
+                            }
+                            else {
+                                System.out.println("\tPasando la transaccion a estado de Validacion");
+                            }
+                            
+                            transaccionesValidando.put(t, p);
+                            t.setEstado(EstadoTransaccion.VALIDANDO);
+                            return validar(t);
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
                 break;
@@ -236,9 +325,15 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
         System.out.println("El usuario \"" + usuario + "\" desea depositar " + cantidad + " pesos de su " + tipoProducto.toString());
         Trans trans = new Trans(tipoProducto, t.getTipoTransaccion());
         transaccionesActivas.put(t, trans);
+        if (visas == null) {
+            System.out.println("\tvisas = null");
+        }
         switch (tipoProducto) {
             case TARJETA_VISA:
                 for (TarjetaVisa producto : visas) {
+                    if (producto == null) {
+                        System.out.println("\tproducto = null");
+                    }
                     if (producto.getUsuario().equals(usuario) && cantidad > 0) {
                         try {
                             Producto p = (Producto)producto.clone();
@@ -377,13 +472,17 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
         if (!hayConflicto(t)) {
             try {
                 if (commit(t)) {
-                    System.out.println("Se hizo commit: " + visas);
+                    if (visas == null) {
+                        System.out.println("\tvisas = null"); 
+                    }
+                    System.out.println("\tSe hizo commit: " + visas);
                     return true;
                 }
             } catch (RemoteException ex) {
                 Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        System.out.println("\tNo se pudo commit");
         return false;
     }
     
@@ -442,16 +541,16 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
         
         switch (t.getRecursoAfectado()) {
             case CUENTA_AHORRO:
-                ahorros.set(index, (CuentaAhorro)transaccionesValidando.get(t));
+                ahorros.set(index, (CuentaAhorro)p);
                 break;
             case CUENTA_CORRIENTE:
-                corrientes.set(index, (CuentaCorriente)transaccionesValidando.get(t));
+                corrientes.set(index, (CuentaCorriente)p);
                 break;
             case TARJETA_MASTERCARD:
-                mastercards.set(index, (TarjetaMasterCard)transaccionesValidando.get(t));
+                mastercards.set(index, (TarjetaMasterCard)p);
                 break;
             case TARJETA_VISA:
-                visas.set(index, (TarjetaVisa)transaccionesValidando.get(t));
+                visas.set(index, (TarjetaVisa)p);
                 break;
         }
         
