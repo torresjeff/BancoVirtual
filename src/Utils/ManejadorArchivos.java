@@ -125,7 +125,7 @@ public class ManejadorArchivos {
     public void escribirUsuarios(String nombreArchivo, ArrayList<Auth>usr) throws IOException{
         PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo));
         for (int i = 0; i < usr.size(); i++) {
-            pw.write(usr.get(i).getId() +","+usr.get(i).getPasword());
+            pw.println(usr.get(i).getId() +","+usr.get(i).getPasword());
         }
         System.out.println("Archivo usuarios escrito satisfactoriamente...");
         pw.close();
@@ -134,7 +134,7 @@ public class ManejadorArchivos {
      public void escribirVisa(String nombreArchivo, ArrayList<TarjetaVisa>visas) throws IOException{
         PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo));
         for (int i = 0; i < visas.size(); i++) {
-            pw.write(visas.get(i).numeroProducto+","+visas.get(i).saldo+","+visas.get(i).getUsuario());
+            pw.println(visas.get(i).numeroProducto+","+visas.get(i).saldo+","+visas.get(i).getUsuario());
         }
         System.out.println("Archivo visas escrito satisfactoriamente...");
         pw.close();
@@ -142,7 +142,7 @@ public class ManejadorArchivos {
      public void escribirMasterCard(String nombreArchivo, ArrayList<TarjetaMasterCard>mastercards) throws IOException{
         PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo));
         for (int i = 0; i < mastercards.size(); i++) {
-            pw.write(mastercards.get(i).numeroProducto+","+mastercards.get(i).saldo+","+mastercards.get(i).getUsuario());
+            pw.println(mastercards.get(i).numeroProducto+","+mastercards.get(i).saldo+","+mastercards.get(i).getUsuario());
         }
         System.out.println("Archivo MasterCard escrito satisfactoriamente...");
         pw.close();
@@ -150,7 +150,7 @@ public class ManejadorArchivos {
      public void escribirAhorros(String nombreArchivo, ArrayList<CuentaAhorro>ahorros) throws IOException{
         PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo));
         for (int i = 0; i < ahorros.size(); i++) {
-            pw.write(ahorros.get(i).numeroProducto+","+ahorros.get(i).saldo+","+ahorros.get(i).getUsuario());
+            pw.println(ahorros.get(i).numeroProducto+","+ahorros.get(i).saldo+","+ahorros.get(i).getUsuario());
         }
          System.out.println("Archivo ahorros escrito satisfactoriamente...");
         pw.close();
@@ -158,7 +158,7 @@ public class ManejadorArchivos {
      public void escribirCorriente(String nombreArchivo, ArrayList<CuentaCorriente>corrientes) throws IOException{
         PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo));
         for (int i = 0; i < corrientes.size(); i++) {
-            pw.write(corrientes.get(i).numeroProducto+","+corrientes.get(i).saldo+","+corrientes.get(i).getUsuario());
+            pw.println(corrientes.get(i).numeroProducto+","+corrientes.get(i).saldo+","+corrientes.get(i).getUsuario());
         }
         System.out.println("Archivo corrientes escrito satisfactoriamente...");
         pw.close();
