@@ -163,12 +163,7 @@ public class Banco implements IBanco, Serializable {
     }
 
     @Override
-    public boolean puedeCommit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean commit(String usuario, TipoProducto tipoProducto, Transaccion t) throws RemoteException {
+    public boolean commit(Transaccion t) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

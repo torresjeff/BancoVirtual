@@ -12,6 +12,12 @@ import java.io.Serializable;
  * @author manuela
  */
 public class CuentaAhorro extends Cuenta implements Serializable {
+    
+    public CuentaAhorro(Cuenta c) {
+        this.numeroProducto = c.numeroProducto;
+        this.saldo = c.saldo;
+        this.usuario = c.usuario;
+    }
 
     public CuentaAhorro(int numeroCuenta, double saldo, String usuario) {
         super(numeroCuenta, saldo, usuario);
