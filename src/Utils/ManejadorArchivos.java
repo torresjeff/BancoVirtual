@@ -50,7 +50,7 @@ public class ManejadorArchivos {
             visas.add(tv=new TarjetaVisa(Integer.parseInt(ar[0]), Double.parseDouble(ar[1]), ar[2]));
             while ((str = in.readLine()) != null) {
                 String[] ar1 = str.split(",");           
-                visas.add(tv=new TarjetaVisa(Integer.parseInt(ar[0]), Double.parseDouble(ar[1]), ar[2]));
+                visas.add(tv=new TarjetaVisa(Integer.parseInt(ar1[0]), Double.parseDouble(ar1[1]), ar1[2]));
             }
             in.close();
         } catch (IOException e) {
@@ -71,7 +71,7 @@ public class ManejadorArchivos {
             
             while ((str = in.readLine()) != null) {
                 String[] ar1 = str.split(",");           
-                mastercards.add(tmc=new TarjetaMasterCard(Integer.parseInt(ar[0]), Double.parseDouble(ar[1]), ar[2]));
+                mastercards.add(tmc=new TarjetaMasterCard(Integer.parseInt(ar1[0]), Double.parseDouble(ar1[1]), ar1[2]));
             }
             in.close();
         } catch (IOException e) {
@@ -92,7 +92,7 @@ public class ManejadorArchivos {
             
             while ((str = in.readLine()) != null) {
                 String[] ar1 = str.split(",");           
-                ahorros.add(ca=new CuentaAhorro(Integer.parseInt(ar[0]), Double.parseDouble(ar[1]), ar[2]));
+                ahorros.add(ca=new CuentaAhorro(Integer.parseInt(ar1[0]), Double.parseDouble(ar1[1]), ar1[2]));
             }
             in.close();
         } catch (IOException e) {
@@ -113,7 +113,7 @@ public class ManejadorArchivos {
             
             while ((str = in.readLine()) != null) {
                 String[] ar1 = str.split(",");           
-                corrientes.add(cc=new CuentaCorriente(Integer.parseInt(ar[0]), Double.parseDouble(ar[1]), ar[2]));
+                corrientes.add(cc=new CuentaCorriente(Integer.parseInt(ar1[0]), Double.parseDouble(ar1[1]), ar1[2]));
             }
             in.close();
         } catch (IOException e) {
