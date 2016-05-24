@@ -10,6 +10,7 @@ import Utils.Cuenta;
 import Utils.CuentaAhorro;
 import Utils.CuentaCorriente;
 import Utils.EstadoTransaccion;
+import Utils.ManejadorArchivos;
 import Utils.Producto;
 import Utils.TarjetaMasterCard;
 import Utils.TarjetaVisa;
@@ -141,14 +142,15 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     }
     
     private void agregarUsuarios() {
-        Auth auth = new Auth("jeff", "abcd");
-        auths.add(auth);
+        //Auth auth = new Auth("jeff", "abcd");
+        
+        auths.addAll(ManejadorArchivos.leerUsuarios("usr.txt"));
+        //auths.add(auth);
     }
     
     private void agregarProductos() {
-        int numeroProducto = 1;
-        
-        for (Auth auth : auths) {
+        //int numeroProducto = 1;
+        /*for (Auth auth : auths) {
             Usuario u = new Usuario(auth.getId());
             TarjetaVisa tv = new TarjetaVisa(numeroProducto, numeroProducto * 10000, u.getUsuario());
             u.setTarjetaVisa(tv);
@@ -165,7 +167,56 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
             ahorros.add(ca);
             corrientes.add(cc);
             numeroProducto++;
+        }*/
+        
+        visas.addAll(ManejadorArchivos.leerVisa("visas.txt"));
+        mastercards.addAll(ManejadorArchivos.leerMasterCard("mastercards.txt"));
+        ahorros.addAll(ManejadorArchivos.leerAhorros("ahorros.txt"));
+        corrientes.addAll(ManejadorArchivos.leerCorriente("corrientes.txt"));
+        
+        System.out.println("\tvisas: " + visas);
+        System.out.println("\tmastercards: " + mastercards);
+        System.out.println("\tahorros: " + ahorros);
+        System.out.println("\tcorrientes: " + corrientes);
+        
+        for (Auth auth : auths) {
+            Usuario u = new Usuario(auth.getId());
+            
+            //Buscar la tarjeta Visa del usuario
+            for (TarjetaVisa producto : visas) {
+                if (producto.getUsuario().equals(u.getUsuario())) {
+                    u.setTarjetaVisa(producto);
+                    break;
+                }
+            }
+            
+            //Buscar la tarjeta MasterCard del usuario
+            for (TarjetaMasterCard producto : mastercards) {
+                if (producto.getUsuario().equals(u.getUsuario())) {
+                    u.setTarjetaMastercard(producto);
+                    break;
+                }
+            }
+            
+            //Buscar la cuenta de ahorros del usuario
+            for (CuentaAhorro producto : ahorros) {
+                if (producto.getUsuario().equals(u.getUsuario())) {
+                    u.setCuentaAhorros(producto);
+                    break;
+                }
+            }
+            
+            //Buscar la cuenta de ahorros del usuario
+            for (CuentaCorriente producto : corrientes) {
+                if (producto.getUsuario().equals(u.getUsuario())) {
+                    u.setCuentaCorrientes(producto);
+                    break;
+                }
+            }
+            
+            usuarios.add(u);
         }
+        
         
         System.out.println("\t" + usuarios);
     }
