@@ -629,37 +629,46 @@ public class MainBanco extends UnicastRemoteObject implements IBanco{
     
     @Override
     public boolean commit(Transaccion t) throws RemoteException {
-        int index = buscarProducto(t.getUsuario(), t.getRecursoAfectado());
-        if (index == -1) {
-            return false;
+        try {
+            int index = buscarProducto(t.getUsuario(), t.getRecursoAfectado());
+            if (index == -1) {
+                return false;
+            }
+            
+            Producto p = transaccionesValidando.remove(t);
+            if (p == null) {
+                return false;
+            }
+            
+            switch (t.getRecursoAfectado()) {
+                case CUENTA_AHORRO:
+                    //ahorros.set(index, (CuentaAhorro)p);
+                    ahorros.set(index, new CuentaAhorro((Cuenta)p));
+                    ManejadorArchivos.escribirAhorros("ahorros.txt", ahorros);
+                    break;
+                case CUENTA_CORRIENTE:
+                    //corrientes.set(index, (CuentaCorriente)p);
+                    corrientes.set(index, new CuentaCorriente((Cuenta)p));
+                    ManejadorArchivos.escribirCorriente("corrientes.txt", corrientes);
+                    break;
+                case TARJETA_MASTERCARD:
+                    mastercards.set(index, (TarjetaMasterCard)p);
+                    ManejadorArchivos.escribirMasterCard("mastercards.txt", mastercards);
+                    break;
+                case TARJETA_VISA:
+                    visas.set(index, (TarjetaVisa)p);
+                    ManejadorArchivos.escribirVisa("visas.txt", visas);
+                    break;
+            }
+            
+            
+            t.setEstado(EstadoTransaccion.ACTUALIZANDO);
+            transaccionesConsumadas.put(t, p);
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(MainBanco.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        Producto p = transaccionesValidando.remove(t);
-        if (p == null) {
-            return false;
-        }
-        
-        switch (t.getRecursoAfectado()) {
-            case CUENTA_AHORRO:
-                //ahorros.set(index, (CuentaAhorro)p);
-                ahorros.set(index, new CuentaAhorro((Cuenta)p));
-                break;
-            case CUENTA_CORRIENTE:
-                //corrientes.set(index, (CuentaCorriente)p);
-                corrientes.set(index, new CuentaCorriente((Cuenta)p));
-                break;
-            case TARJETA_MASTERCARD:
-                mastercards.set(index, (TarjetaMasterCard)p);
-                break;
-            case TARJETA_VISA:
-                visas.set(index, (TarjetaVisa)p);
-                break;
-        }
-        
-        
-        t.setEstado(EstadoTransaccion.ACTUALIZANDO);
-        transaccionesConsumadas.put(t, p);
-        return true;
+        return false;
     }
 
     @Override

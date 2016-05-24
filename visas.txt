@@ -1,3 +1,5 @@
-1,8000,jeff
-2,56000,sebas
-3,21000,manuela
+1,8000.0,jeff
+
+2,56000.0,sebas
+
+3,21000.0,manuela
